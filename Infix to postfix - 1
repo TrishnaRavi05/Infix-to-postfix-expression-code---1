@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define SIZE 20
+char Expr[SIZE];
+char Stack[SIZE];
+int Top = -1;
+int m, l;
+
+void push(char ch) {
+    if (Top + 1 >= SIZE) {
+        printf("\nStack is full");
+    } else {
+        Stack[++Top] = ch;
+    }
+}
+
+void pop() {
+    if (Top < 0) {
+        printf("\nStack is empty");
+    } else if (Stack[Top] != '(') {
+        printf("%c", Stack[Top]);
+        Top--;
+    } else {
+        Top--;
+    }
+}
+
+void infix_to_postfix() {
+    m = 0;
+    while (m < l) {
+        switch (Expr[m]) {
+            case '+':
+            case '-':
+                while (Top >= 0 && (Stack[Top] == '+' || Stack[Top] == '-' || Stack[Top] == '*' || Stack[Top] == '/' || Stack[Top] == '^') && Stack[Top] != '(')
+                    pop();
+                push(Expr[m]);
+                m++;
+                break;
+
+            case '*':
+            case '/':
+                while (Top >= 0 && (Stack[Top] == '*' || Stack[Top] == '/' || Stack[Top] == '^') && Stack[Top] != '(')
+                    pop();
+                push(Expr[m]);
+                m++;
+                break;
+
+            case '^':
+                push(Expr[m]);
+                m++;
+                break;
+
+            case '(':
+                push(Expr[m]);
+                m++;
+                break;
+
+            case ')':
+                while (Stack[Top] != '(')
+                    pop();
+                Top--; // Remove '(' from stack
+                m++;
+                break;
+
+            default:
+                if (isalpha(Expr[m])) {
+                    printf("%c", Expr[m]);
+                    m++;
+                } else {
+                    printf("\nSome error");
+                    exit(0);
+                }
+        }
+    }
+    while (Top >= 0) {
+        if (Stack[Top] != '(')
+            printf("%c", Stack[Top]);
+        Top--;
+    }
+}
+
+int main() {
+    char ch;
+    l = 0;
+    printf("Program to convert infix expression into postfix expression:\n");
+    printf("Enter your expression & to quit enter full stop (.)\n");
+    
+    while ((ch = getchar()) != '.') {
+        Expr[l++] = ch;
+    }
+    infix_to_postfix();
+    return 0;
+}
+
+
+OUTPUT:
+Program to convert infix expression into postfix expression:
+Enter your expression & to quit enter full stop (.)
+A+B/CG(S*E).
+ABCGSE*/+
